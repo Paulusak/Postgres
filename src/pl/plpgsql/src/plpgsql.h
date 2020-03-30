@@ -22,6 +22,7 @@
 #include "executor/spi.h"
 #include "utils/expandedrecord.h"
 #include "utils/typcache.h"
+#include "windowapi.h"
 
 
 /**********************************************************************
@@ -84,7 +85,9 @@ typedef enum PLpgSQL_promise_type
 	PLPGSQL_PROMISE_TG_NARGS,
 	PLPGSQL_PROMISE_TG_ARGV,
 	PLPGSQL_PROMISE_TG_EVENT,
-	PLPGSQL_PROMISE_TG_TAG
+	PLPGSQL_PROMISE_TG_TAG,
+	//SPECHT
+	PLPGSQL_PROMISE_WO
 } PLpgSQL_promise_type;
 
 /*
@@ -1103,6 +1106,11 @@ typedef struct PLpgSQL_execstate
 	const char *err_text;		/* additional state info */
 
 	void	   *plugin_info;	/* reserved for use by optional plugin */
+
+	//SPECHT
+	WindowObject winobj;
+	bool winobj_set;
+
 } PLpgSQL_execstate;
 
 /*
@@ -1273,6 +1281,10 @@ extern HeapTuple plpgsql_exec_trigger(PLpgSQL_function *func,
 									  TriggerData *trigdata);
 extern void plpgsql_exec_event_trigger(PLpgSQL_function *func,
 									   EventTriggerData *trigdata);
+
+//SPECHT
+extern Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, FunctionCallInfo fcinfo, EState *simple_eval_estate, bool atomic);
+
 extern void plpgsql_xact_cb(XactEvent event, void *arg);
 extern void plpgsql_subxact_cb(SubXactEvent event, SubTransactionId mySubid,
 							   SubTransactionId parentSubid, void *arg);

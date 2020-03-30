@@ -88,6 +88,41 @@ window_row_number(PG_FUNCTION_ARGS)
 	PG_RETURN_INT64(curpos + 1);
 }
 
+//SPECHT
+Datum my_window_row_number(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	if(winobj == NULL)
+		PG_RETURN_INT64(-1);
+	else
+	{
+		int64 curpos = WinGetCurrentPosition(winobj);
+		WinSetMarkPosition(winobj, curpos);
+		PG_RETURN_INT64(curpos + 1);
+	}
+}
+    
+Datum
+my_window_rank(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	rank_context *context;
+	bool		up;
+
+	if(winobj == NULL)
+		PG_RETURN_INT64(-1);
+	else
+	{
+		up = rank_up(winobj);
+		context = (rank_context *)
+			WinGetPartitionLocalMemory(winobj, sizeof(rank_context));
+		if (up)
+			context->rank = WinGetCurrentPosition(winobj) + 1;
+
+		PG_RETURN_INT64(context->rank);
+	}
+}
+
 
 /*
  * rank

@@ -38,6 +38,10 @@ typedef struct WindowObjectData *WindowObject;
 
 #define PG_WINDOW_OBJECT() ((WindowObject) fcinfo->context)
 
+//SPECHT
+#define CALLED_AS_WINDOW_OBJECT(fcinfo) \
+	((fcinfo->context) != NULL && IsA((WindowObject) fcinfo->context, WindowObjectData))
+
 #define WindowObjectIsValid(winobj) \
 	((winobj) != NULL && IsA(winobj, WindowObjectData))
 

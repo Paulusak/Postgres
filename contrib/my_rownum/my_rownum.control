@@ -1,0 +1,5 @@
+comment = 'my rownum extension'
+default_version = '1.0'
+module_pathname = '$libdir/my_rownum'
+relocatable = true
+trusted = true

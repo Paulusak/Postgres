@@ -10819,4 +10819,14 @@
   proname => 'pg_partition_root', prorettype => 'regclass',
   proargtypes => 'regclass', prosrc => 'pg_partition_root' },
 
+{ oid => '273', descr => 'my row number within partition',
+  proname => 'my_window_row_number', proisstrict => 'f',
+  prorettype => 'int8', proargtypes => 'int8', prosrc =>
+'my_window_row_number' },
+
+{ oid => '272', descr => 'my rank number within partition',
+  proname => 'my_window_rank', proisstrict => 'f',
+  prorettype => 'int8', proargtypes => 'int8', prosrc =>
+'my_window_rank' },
+
 ]

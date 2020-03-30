@@ -1,0 +1,304 @@
+2020-03-26 23:24:54.514 CET [18261] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-26 23:24:54.514 CET [18261] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-26 23:24:54.517 CET [18261] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-26 23:24:54.520 CET [18262] LOG:  database system was shut down at 2020-03-26 23:24:41 CET
+2020-03-26 23:24:54.521 CET [18261] LOG:  database system is ready to accept connections
+2020-03-26 23:28:46.444 CET [23896] ERROR:  could not open extension control file "/usr/local/pgsql/share/extension/my_rownum.control": No such file or directory
+2020-03-26 23:28:46.444 CET [23896] STATEMENT:  create extension my_rownum
+	;
+2020-03-26 23:36:23.868 CET [24136] ERROR:  relation "testtable" does not exist at character 24
+2020-03-26 23:36:23.868 CET [24136] STATEMENT:  select value, dep from testTable;
+2020-03-26 23:37:12.100 CET [24136] WARNING:  JSEM TADY
+2020-03-26 23:37:12.100 CET [24136] ERROR:  function my_window_row_number(bigint) does not exist at character 8
+2020-03-26 23:37:12.100 CET [24136] HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2020-03-26 23:37:12.100 CET [24136] QUERY:  SELECT my_window_row_number(winobj)
+2020-03-26 23:37:12.100 CET [24136] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-26 23:37:12.100 CET [24136] STATEMENT:  select value, dep, my_rownum() over () from testTable;
+2020-03-26 23:38:46.877 CET [18261] LOG:  received fast shutdown request
+2020-03-26 23:38:46.879 CET [18261] LOG:  aborting any active transactions
+2020-03-26 23:38:46.879 CET [18261] LOG:  background worker "logical replication launcher" (PID 18268) exited with exit code 1
+2020-03-26 23:38:46.879 CET [18263] LOG:  shutting down
+2020-03-26 23:38:46.898 CET [18261] LOG:  database system is shut down
+2020-03-26 23:44:25.058 CET [25269] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-26 23:44:25.059 CET [25269] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-26 23:44:25.061 CET [25269] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-26 23:44:25.065 CET [25270] LOG:  database system was shut down at 2020-03-26 23:43:57 CET
+2020-03-26 23:44:25.067 CET [25269] LOG:  database system is ready to accept connections
+2020-03-26 23:45:24.565 CET [25269] LOG:  received fast shutdown request
+2020-03-26 23:45:24.569 CET [25269] LOG:  aborting any active transactions
+2020-03-26 23:45:24.569 CET [25269] LOG:  background worker "logical replication launcher" (PID 25276) exited with exit code 1
+2020-03-26 23:45:24.569 CET [25271] LOG:  shutting down
+2020-03-26 23:45:24.578 CET [25269] LOG:  database system is shut down
+2020-03-26 23:45:51.905 CET [25301] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-26 23:45:51.905 CET [25301] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-26 23:45:51.907 CET [25301] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-26 23:45:51.910 CET [25302] LOG:  database system was shut down at 2020-03-26 23:45:41 CET
+2020-03-26 23:45:51.912 CET [25301] LOG:  database system is ready to accept connections
+2020-03-26 23:46:27.573 CET [26211] WARNING:  JSEM TADY
+2020-03-26 23:46:27.573 CET [26211] WARNING:  JSEM TADY
+2020-03-26 23:46:27.573 CET [26211] WARNING:  JSEM TADY
+2020-03-27 16:41:37.639 CET [25301] LOG:  received fast shutdown request
+2020-03-27 16:41:37.641 CET [25301] LOG:  aborting any active transactions
+2020-03-27 16:41:37.641 CET [25301] LOG:  background worker "logical replication launcher" (PID 25308) exited with exit code 1
+2020-03-27 16:41:37.641 CET [25303] LOG:  shutting down
+2020-03-27 16:41:37.648 CET [25301] LOG:  database system is shut down
+2020-03-27 16:42:02.261 CET [27797] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 16:42:02.261 CET [27797] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 16:42:02.264 CET [27797] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 16:42:02.267 CET [27798] LOG:  database system was shut down at 2020-03-27 16:41:54 CET
+2020-03-27 16:42:02.269 CET [27797] LOG:  database system is ready to accept connections
+2020-03-27 16:42:35.689 CET [28754] WARNING:  JSEM TADY3
+2020-03-27 16:42:35.689 CET [28754] CONTEXT:  compilation of PL/pgSQL function "my_rownum" near line 1
+2020-03-27 16:42:56.831 CET [28754] WARNING:  JSEM TADY
+2020-03-27 16:42:56.831 CET [28754] WARNING:  JSEM TADY2
+2020-03-27 16:42:56.831 CET [28754] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:42:56.831 CET [28754] WARNING:  JSEM TADY
+2020-03-27 16:42:56.831 CET [28754] WARNING:  JSEM TADY2
+2020-03-27 16:42:56.831 CET [28754] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:42:56.831 CET [28754] WARNING:  JSEM TADY
+2020-03-27 16:42:56.831 CET [28754] WARNING:  JSEM TADY2
+2020-03-27 16:42:56.831 CET [28754] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:44:04.567 CET [27797] LOG:  received fast shutdown request
+2020-03-27 16:44:04.569 CET [27797] LOG:  aborting any active transactions
+2020-03-27 16:44:04.571 CET [27797] LOG:  background worker "logical replication launcher" (PID 27804) exited with exit code 1
+2020-03-27 16:44:04.571 CET [27799] LOG:  shutting down
+2020-03-27 16:44:04.592 CET [27797] LOG:  database system is shut down
+2020-03-27 16:44:27.316 CET [29694] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 16:44:27.316 CET [29694] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 16:44:27.318 CET [29694] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 16:44:27.321 CET [29695] LOG:  database system was shut down at 2020-03-27 16:44:21 CET
+2020-03-27 16:44:27.323 CET [29694] LOG:  database system is ready to accept connections
+2020-03-27 16:44:34.912 CET [29703] WARNING:  JSEM TADY3
+2020-03-27 16:44:34.912 CET [29703] CONTEXT:  compilation of PL/pgSQL function "my_rownum" near line 1
+2020-03-27 16:44:49.135 CET [29703] WARNING:  JSEM TADY
+2020-03-27 16:44:49.135 CET [29703] WARNING:  JSEM TADY2
+2020-03-27 16:44:49.135 CET [29703] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:44:49.277 CET [29694] LOG:  server process (PID 29703) was terminated by signal 11: Segmentation fault
+2020-03-27 16:44:49.277 CET [29694] DETAIL:  Failed process was running: select value, dep, my_rownum() over () from testTable;
+2020-03-27 16:44:49.277 CET [29694] LOG:  terminating any other active server processes
+2020-03-27 16:44:49.278 CET [29699] WARNING:  terminating connection because of crash of another server process
+2020-03-27 16:44:49.278 CET [29699] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-27 16:44:49.278 CET [29699] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-27 16:44:49.278 CET [29705] FATAL:  the database system is in recovery mode
+2020-03-27 16:44:49.278 CET [29694] LOG:  all server processes terminated; reinitializing
+2020-03-27 16:44:49.286 CET [29706] LOG:  database system was interrupted; last known up at 2020-03-27 16:44:27 CET
+2020-03-27 16:44:49.470 CET [29706] LOG:  database system was not properly shut down; automatic recovery in progress
+2020-03-27 16:44:49.471 CET [29706] LOG:  redo starts at 0/1555688
+2020-03-27 16:44:49.472 CET [29706] LOG:  invalid record length at 0/157A380: wanted 24, got 0
+2020-03-27 16:44:49.472 CET [29706] LOG:  redo done at 0/157A358
+2020-03-27 16:44:49.490 CET [29694] LOG:  database system is ready to accept connections
+2020-03-27 16:46:10.591 CET [29694] LOG:  received fast shutdown request
+2020-03-27 16:46:10.598 CET [29694] LOG:  aborting any active transactions
+2020-03-27 16:46:10.598 CET [29694] LOG:  background worker "logical replication launcher" (PID 29712) exited with exit code 1
+2020-03-27 16:46:10.598 CET [29707] LOG:  shutting down
+2020-03-27 16:46:10.609 CET [29694] LOG:  database system is shut down
+2020-03-27 16:46:30.363 CET [30695] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 16:46:30.364 CET [30695] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 16:46:30.366 CET [30695] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 16:46:30.369 CET [30696] LOG:  database system was shut down at 2020-03-27 16:46:26 CET
+2020-03-27 16:46:30.371 CET [30695] LOG:  database system is ready to accept connections
+2020-03-27 16:46:49.447 CET [30704] WARNING:  JSEM TADY
+2020-03-27 16:46:49.447 CET [30704] WARNING:  JSEM TADY2
+2020-03-27 16:46:49.447 CET [30704] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:46:49.447 CET [30704] WARNING:  JSEM TADY3
+2020-03-27 16:46:49.447 CET [30704] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:46:49.447 CET [30704] WARNING:  JSEM TADY4
+2020-03-27 16:46:49.447 CET [30704] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:46:49.582 CET [30695] LOG:  server process (PID 30704) was terminated by signal 11: Segmentation fault
+2020-03-27 16:46:49.582 CET [30695] DETAIL:  Failed process was running: select value, dep, my_rownum() over () from testTable;
+2020-03-27 16:46:49.582 CET [30695] LOG:  terminating any other active server processes
+2020-03-27 16:46:49.582 CET [30700] WARNING:  terminating connection because of crash of another server process
+2020-03-27 16:46:49.582 CET [30700] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-27 16:46:49.582 CET [30700] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-27 16:46:49.582 CET [30706] FATAL:  the database system is in recovery mode
+2020-03-27 16:46:49.582 CET [30695] LOG:  all server processes terminated; reinitializing
+2020-03-27 16:46:49.592 CET [30707] LOG:  database system was interrupted; last known up at 2020-03-27 16:46:30 CET
+2020-03-27 16:46:49.767 CET [30707] LOG:  database system was not properly shut down; automatic recovery in progress
+2020-03-27 16:46:49.768 CET [30707] LOG:  redo starts at 0/1555688
+2020-03-27 16:46:49.769 CET [30707] LOG:  invalid record length at 0/157A380: wanted 24, got 0
+2020-03-27 16:46:49.769 CET [30707] LOG:  redo done at 0/157A358
+2020-03-27 16:46:49.787 CET [30695] LOG:  database system is ready to accept connections
+2020-03-27 16:55:42.424 CET [30695] LOG:  received fast shutdown request
+2020-03-27 16:55:42.426 CET [30695] LOG:  aborting any active transactions
+2020-03-27 16:55:42.427 CET [30695] LOG:  background worker "logical replication launcher" (PID 30713) exited with exit code 1
+2020-03-27 16:55:42.427 CET [30708] LOG:  shutting down
+2020-03-27 16:55:42.437 CET [30695] LOG:  database system is shut down
+2020-03-27 16:56:08.008 CET [31776] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 16:56:08.008 CET [31776] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 16:56:08.011 CET [31776] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 16:56:08.013 CET [31777] LOG:  database system was shut down at 2020-03-27 16:55:56 CET
+2020-03-27 16:56:08.015 CET [31776] LOG:  database system is ready to accept connections
+2020-03-27 16:56:24.631 CET [31785] WARNING:  JSEM TADY
+2020-03-27 16:56:24.632 CET [31785] WARNING:  JSEM TADY2
+2020-03-27 16:56:24.632 CET [31785] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 16:56:24.632 CET [31785] WARNING:  JSEM TADY
+2020-03-27 16:56:24.632 CET [31785] WARNING:  JSEM TADY2
+2020-03-27 16:56:24.632 CET [31785] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:00:11.544 CET [31776] LOG:  received fast shutdown request
+2020-03-27 17:00:11.547 CET [31776] LOG:  aborting any active transactions
+2020-03-27 17:00:11.547 CET [31776] LOG:  background worker "logical replication launcher" (PID 31783) exited with exit code 1
+2020-03-27 17:00:11.547 CET [31778] LOG:  shutting down
+2020-03-27 17:00:11.569 CET [31776] LOG:  database system is shut down
+2020-03-27 17:00:32.102 CET [32761] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 17:00:32.102 CET [32761] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 17:00:32.104 CET [32761] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 17:00:32.107 CET [32762] LOG:  database system was shut down at 2020-03-27 17:00:28 CET
+2020-03-27 17:00:32.109 CET [32761] LOG:  database system is ready to accept connections
+2020-03-27 17:00:49.440 CET [302] WARNING:  JSEM TADY
+2020-03-27 17:00:49.440 CET [302] WARNING:  JSEM TADY2
+2020-03-27 17:00:49.440 CET [302] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:00:49.585 CET [32761] LOG:  server process (PID 302) was terminated by signal 11: Segmentation fault
+2020-03-27 17:00:49.585 CET [32761] DETAIL:  Failed process was running: select value, dep, my_rownum() over () from testTable;
+2020-03-27 17:00:49.585 CET [32761] LOG:  terminating any other active server processes
+2020-03-27 17:00:49.585 CET [32766] WARNING:  terminating connection because of crash of another server process
+2020-03-27 17:00:49.585 CET [32766] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-27 17:00:49.585 CET [32766] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-27 17:00:49.586 CET [304] FATAL:  the database system is in recovery mode
+2020-03-27 17:00:49.586 CET [32761] LOG:  all server processes terminated; reinitializing
+2020-03-27 17:00:49.594 CET [305] LOG:  database system was interrupted; last known up at 2020-03-27 17:00:32 CET
+2020-03-27 17:00:49.786 CET [305] LOG:  database system was not properly shut down; automatic recovery in progress
+2020-03-27 17:00:49.787 CET [305] LOG:  redo starts at 0/1555688
+2020-03-27 17:00:49.788 CET [305] LOG:  invalid record length at 0/157A318: wanted 24, got 0
+2020-03-27 17:00:49.788 CET [305] LOG:  redo done at 0/157A2E0
+2020-03-27 17:00:49.807 CET [32761] LOG:  database system is ready to accept connections
+2020-03-27 17:03:41.280 CET [32761] LOG:  received fast shutdown request
+2020-03-27 17:03:41.283 CET [32761] LOG:  aborting any active transactions
+2020-03-27 17:03:41.283 CET [32761] LOG:  background worker "logical replication launcher" (PID 312) exited with exit code 1
+2020-03-27 17:03:41.284 CET [306] LOG:  shutting down
+2020-03-27 17:03:41.293 CET [32761] LOG:  database system is shut down
+2020-03-27 17:03:59.607 CET [1598] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 17:03:59.608 CET [1598] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 17:03:59.611 CET [1598] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 17:03:59.614 CET [1599] LOG:  database system was shut down at 2020-03-27 17:03:54 CET
+2020-03-27 17:03:59.615 CET [1598] LOG:  database system is ready to accept connections
+2020-03-27 17:04:05.401 CET [1607] WARNING:  Vytvarim global promennou winobj
+2020-03-27 17:04:05.401 CET [1607] CONTEXT:  compilation of PL/pgSQL function "my_rownum" near line 1
+2020-03-27 17:04:16.552 CET [1607] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:04:16.552 CET [1607] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:04:16.696 CET [1598] LOG:  server process (PID 1607) was terminated by signal 11: Segmentation fault
+2020-03-27 17:04:16.696 CET [1598] DETAIL:  Failed process was running: select value, dep, my_rownum() over () from testTable;
+2020-03-27 17:04:16.696 CET [1598] LOG:  terminating any other active server processes
+2020-03-27 17:04:16.697 CET [1603] WARNING:  terminating connection because of crash of another server process
+2020-03-27 17:04:16.697 CET [1603] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-27 17:04:16.697 CET [1603] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-27 17:04:16.697 CET [1609] FATAL:  the database system is in recovery mode
+2020-03-27 17:04:16.697 CET [1598] LOG:  all server processes terminated; reinitializing
+2020-03-27 17:04:16.707 CET [1610] LOG:  database system was interrupted; last known up at 2020-03-27 17:03:59 CET
+2020-03-27 17:04:16.891 CET [1610] LOG:  database system was not properly shut down; automatic recovery in progress
+2020-03-27 17:04:16.892 CET [1610] LOG:  redo starts at 0/1555688
+2020-03-27 17:04:16.893 CET [1610] LOG:  invalid record length at 0/157A380: wanted 24, got 0
+2020-03-27 17:04:16.893 CET [1610] LOG:  redo done at 0/157A348
+2020-03-27 17:04:16.911 CET [1598] LOG:  database system is ready to accept connections
+2020-03-27 17:05:38.048 CET [1598] LOG:  received fast shutdown request
+2020-03-27 17:05:38.049 CET [1598] LOG:  aborting any active transactions
+2020-03-27 17:05:38.050 CET [1598] LOG:  background worker "logical replication launcher" (PID 1616) exited with exit code 1
+2020-03-27 17:05:38.050 CET [1611] LOG:  shutting down
+2020-03-27 17:05:38.059 CET [1598] LOG:  database system is shut down
+2020-03-27 17:05:58.854 CET [2583] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 17:05:58.854 CET [2583] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 17:05:58.857 CET [2583] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 17:05:58.860 CET [2584] LOG:  database system was shut down at 2020-03-27 17:05:54 CET
+2020-03-27 17:05:58.862 CET [2583] LOG:  database system is ready to accept connections
+2020-03-27 17:06:05.577 CET [2592] WARNING:  Vytvarim global promennou winobj
+2020-03-27 17:06:05.577 CET [2592] CONTEXT:  compilation of PL/pgSQL function "my_rownum" near line 1
+2020-03-27 17:06:17.600 CET [2592] WARNING:  Exec window object
+2020-03-27 17:06:17.600 CET [2592] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:06:17.600 CET [2592] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:06:17.739 CET [2583] LOG:  server process (PID 2592) was terminated by signal 11: Segmentation fault
+2020-03-27 17:06:17.739 CET [2583] DETAIL:  Failed process was running: select value, dep, my_rownum() over () from testTable;
+2020-03-27 17:06:17.739 CET [2583] LOG:  terminating any other active server processes
+2020-03-27 17:06:17.740 CET [2588] WARNING:  terminating connection because of crash of another server process
+2020-03-27 17:06:17.740 CET [2588] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-27 17:06:17.740 CET [2588] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-27 17:06:17.740 CET [2594] FATAL:  the database system is in recovery mode
+2020-03-27 17:06:17.740 CET [2583] LOG:  all server processes terminated; reinitializing
+2020-03-27 17:06:17.748 CET [2595] LOG:  database system was interrupted; last known up at 2020-03-27 17:05:58 CET
+2020-03-27 17:06:17.921 CET [2595] LOG:  database system was not properly shut down; automatic recovery in progress
+2020-03-27 17:06:17.922 CET [2595] LOG:  redo starts at 0/1555688
+2020-03-27 17:06:17.923 CET [2595] LOG:  invalid record length at 0/157A380: wanted 24, got 0
+2020-03-27 17:06:17.923 CET [2595] LOG:  redo done at 0/157A358
+2020-03-27 17:06:17.941 CET [2583] LOG:  database system is ready to accept connections
+2020-03-27 17:16:45.489 CET [2583] LOG:  received fast shutdown request
+2020-03-27 17:16:45.491 CET [2583] LOG:  aborting any active transactions
+2020-03-27 17:16:45.492 CET [2583] LOG:  background worker "logical replication launcher" (PID 2601) exited with exit code 1
+2020-03-27 17:16:45.492 CET [2596] LOG:  shutting down
+2020-03-27 17:16:45.502 CET [2583] LOG:  database system is shut down
+2020-03-27 17:17:02.822 CET [3785] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-27 17:17:02.822 CET [3785] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-27 17:17:02.825 CET [3785] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-27 17:17:02.828 CET [3786] LOG:  database system was shut down at 2020-03-27 17:16:59 CET
+2020-03-27 17:17:02.829 CET [3785] LOG:  database system is ready to accept connections
+2020-03-27 17:17:09.882 CET [3794] WARNING:  Vytvarim global promennou winobj
+2020-03-27 17:17:09.882 CET [3794] CONTEXT:  compilation of PL/pgSQL function "my_rownum" near line 1
+2020-03-27 17:17:23.608 CET [3794] WARNING:  Exec window object
+2020-03-27 17:17:23.608 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:17:23.608 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:17:23.608 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:17:23.608 CET [3794] WARNING:  Exec window object
+2020-03-27 17:17:23.608 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:17:23.608 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:17:23.608 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:10.008 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:10.008 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:10.008 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:10.008 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:10.008 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:11.928 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:11.928 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:11.928 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:11.928 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:11.928 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:33.496 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:33.497 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:33.497 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:33.497 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Exec window object
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Nastavuji promenne
+2020-03-27 17:18:33.497 CET [3794] WARNING:  Do promise ukládám estate->winobj
+2020-03-27 17:18:33.497 CET [3794] CONTEXT:  PL/pgSQL function my_rownum() line 3 at RETURN
+2020-03-29 22:39:15.670 CEST [3785] LOG:  received fast shutdown request
+2020-03-29 22:39:15.673 CEST [3785] LOG:  aborting any active transactions
+2020-03-29 22:39:15.673 CEST [3785] LOG:  background worker "logical replication launcher" (PID 3792) exited with exit code 1
+2020-03-29 22:39:15.673 CEST [3787] LOG:  shutting down
+2020-03-29 22:39:15.681 CEST [3785] LOG:  database system is shut down
+2020-03-29 22:39:35.139 CEST [5707] LOG:  starting PostgreSQL 13devel on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
+2020-03-29 22:39:35.140 CEST [5707] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-03-29 22:39:35.142 CEST [5707] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-03-29 22:39:35.145 CEST [5708] LOG:  database system was shut down at 2020-03-29 22:39:30 CEST
+2020-03-29 22:39:35.147 CEST [5707] LOG:  database system is ready to accept connections
+2020-03-29 22:39:58.935 CEST [5716] WARNING:  Vytvarim global promennou winobj
+2020-03-29 22:39:58.935 CEST [5716] CONTEXT:  compilation of PL/pgSQL function "my_rownum" near line 1
+2020-03-29 22:42:26.135 CEST [5799] WARNING:  Vytvarim global promennou winobj
+2020-03-29 22:42:26.135 CEST [5799] CONTEXT:  compilation of PL/pgSQL function "my_rownum" near line 1
+2020-03-29 22:42:26.135 CEST [5799] WARNING:  Vytvarim global promennou winobj
+2020-03-29 22:42:26.135 CEST [5799] CONTEXT:  compilation of PL/pgSQL function "my_rank" near line 1

@@ -1193,6 +1193,329 @@ plpgsql_exec_event_trigger(PLpgSQL_function *func, EventTriggerData *trigdata)
 	error_context_stack = plerrcontext.previous;
 }
 
+//SPECHT
+Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, FunctionCallInfo fcinfo, EState *simple_eval_estate, bool atomic)
+{
+	PLpgSQL_execstate estate;
+	ErrorContextCallback plerrcontext;
+	int			i;
+	int			rc;
+
+	/*
+	 * Setup the execution state
+	 */
+	plpgsql_estate_setup(&estate, func, (ReturnSetInfo *) fcinfo->resultinfo,
+						 simple_eval_estate);
+	estate.atomic = atomic;
+
+	//elog(WARNING, "Exec window object");
+	if(estate.winobj_set == false)
+	{
+		//elog(WARNING, "Nastavuji promenne");
+		estate.winobj = winobj;
+		estate.winobj_set = true;
+	}
+
+	/*
+	 * Setup error traceback support for ereport()
+	 */
+	plerrcontext.callback = plpgsql_exec_error_callback;
+	plerrcontext.arg = &estate;
+	plerrcontext.previous = error_context_stack;
+	error_context_stack = &plerrcontext;
+
+	/*
+	 * Make local execution copies of all the datums
+	 */
+	estate.err_text = gettext_noop("during initialization of execution state");
+	copy_plpgsql_datums(&estate, func);
+
+	/*
+	 * Store the actual call argument values into the appropriate variables
+	 */
+	estate.err_text = gettext_noop("while storing call arguments into local variables");
+	for (i = 0; i < func->fn_nargs; i++)
+	{
+		int			n = func->fn_argvarnos[i];
+
+		switch (estate.datums[n]->dtype)
+		{
+			case PLPGSQL_DTYPE_VAR:
+				{
+					PLpgSQL_var *var = (PLpgSQL_var *) estate.datums[n];
+
+					assign_simple_var(&estate, var,
+									  fcinfo->args[i].value,
+									  fcinfo->args[i].isnull,
+									  false);
+
+					/*
+					 * Force any array-valued parameter to be stored in
+					 * expanded form in our local variable, in hopes of
+					 * improving efficiency of uses of the variable.  (This is
+					 * a hack, really: why only arrays? Need more thought
+					 * about which cases are likely to win.  See also
+					 * typisarray-specific heuristic in exec_assign_value.)
+					 *
+					 * Special cases: If passed a R/W expanded pointer, assume
+					 * we can commandeer the object rather than having to copy
+					 * it.  If passed a R/O expanded pointer, just keep it as
+					 * the value of the variable for the moment.  (We'll force
+					 * it to R/W if the variable gets modified, but that may
+					 * very well never happen.)
+					 */
+					if (!var->isnull && var->datatype->typisarray)
+					{
+						if (VARATT_IS_EXTERNAL_EXPANDED_RW(DatumGetPointer(var->value)))
+						{
+							/* take ownership of R/W object */
+							assign_simple_var(&estate, var,
+											  TransferExpandedObject(var->value,
+																	 estate.datum_context),
+											  false,
+											  true);
+						}
+						else if (VARATT_IS_EXTERNAL_EXPANDED_RO(DatumGetPointer(var->value)))
+						{
+							/* R/O pointer, keep it as-is until assigned to */
+						}
+						else
+						{
+							/* flat array, so force to expanded form */
+							assign_simple_var(&estate, var,
+											  expand_array(var->value,
+														   estate.datum_context,
+														   NULL),
+											  false,
+											  true);
+						}
+					}
+				}
+				break;
+
+			case PLPGSQL_DTYPE_REC:
+				{
+					PLpgSQL_rec *rec = (PLpgSQL_rec *) estate.datums[n];
+
+					if (!fcinfo->args[i].isnull)
+					{
+						/* Assign row value from composite datum */
+						exec_move_row_from_datum(&estate,
+												 (PLpgSQL_variable *) rec,
+												 fcinfo->args[i].value);
+					}
+					else
+					{
+						/* If arg is null, set variable to null */
+						exec_move_row(&estate, (PLpgSQL_variable *) rec,
+									  NULL, NULL);
+					}
+					/* clean up after exec_move_row() */
+					exec_eval_cleanup(&estate);
+				}
+				break;
+
+			default:
+				/* Anything else should not be an argument variable */
+				elog(ERROR, "unrecognized dtype: %d", func->datums[i]->dtype);
+		}
+	}
+
+	estate.err_text = gettext_noop("during function entry");
+
+	/*
+	 * Set the magic variable FOUND to false
+	 */
+	exec_set_found(&estate, false);
+
+	/*
+	 * Let the instrumentation plugin peek at this function
+	 */
+	if (*plpgsql_plugin_ptr && (*plpgsql_plugin_ptr)->func_beg)
+		((*plpgsql_plugin_ptr)->func_beg) (&estate, func);
+
+	/*
+	 * Now call the toplevel block of statements
+	 */
+	estate.err_text = NULL;
+	estate.err_stmt = (PLpgSQL_stmt *) (func->action);
+	rc = exec_stmt(&estate, (PLpgSQL_stmt *) func->action);
+	if (rc != PLPGSQL_RC_RETURN)
+	{
+		estate.err_stmt = NULL;
+		estate.err_text = NULL;
+		ereport(ERROR,
+				(errcode(ERRCODE_S_R_E_FUNCTION_EXECUTED_NO_RETURN_STATEMENT),
+				 errmsg("control reached end of function without RETURN")));
+	}
+
+	/*
+	 * We got a return value - process it
+	 */
+	estate.err_stmt = NULL;
+	estate.err_text = gettext_noop("while casting return value to function's return type");
+
+	fcinfo->isnull = estate.retisnull;
+
+	if (estate.retisset)
+	{
+		ReturnSetInfo *rsi = estate.rsi;
+
+		/* Check caller can handle a set result */
+		if (!rsi || !IsA(rsi, ReturnSetInfo) ||
+			(rsi->allowedModes & SFRM_Materialize) == 0)
+			ereport(ERROR,
+					(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
+					 errmsg("set-valued function called in context that cannot accept a set")));
+		rsi->returnMode = SFRM_Materialize;
+
+		/* If we produced any tuples, send back the result */
+		if (estate.tuple_store)
+		{
+			MemoryContext oldcxt;
+
+			rsi->setResult = estate.tuple_store;
+			oldcxt = MemoryContextSwitchTo(estate.tuple_store_cxt);
+			rsi->setDesc = CreateTupleDescCopy(estate.tuple_store_desc);
+			MemoryContextSwitchTo(oldcxt);
+		}
+		estate.retval = (Datum) 0;
+		fcinfo->isnull = true;
+	}
+	else if (!estate.retisnull)
+	{
+		/*
+		 * Cast result value to function's declared result type, and copy it
+		 * out to the upper executor memory context.  We must treat tuple
+		 * results specially in order to deal with cases like rowtypes
+		 * involving dropped columns.
+		 */
+		if (estate.retistuple)
+		{
+			/* Don't need coercion if rowtype is known to match */
+			if (func->fn_rettype == estate.rettype &&
+				func->fn_rettype != RECORDOID)
+			{
+				/*
+				 * Copy the tuple result into upper executor memory context.
+				 * However, if we have a R/W expanded datum, we can just
+				 * transfer its ownership out to the upper context.
+				 */
+				estate.retval = SPI_datumTransfer(estate.retval,
+												  false,
+												  -1);
+			}
+			else
+			{
+				/*
+				 * Need to look up the expected result type.  XXX would be
+				 * better to cache the tupdesc instead of repeating
+				 * get_call_result_type(), but the only easy place to save it
+				 * is in the PLpgSQL_function struct, and that's too
+				 * long-lived: composite types could change during the
+				 * existence of a PLpgSQL_function.
+				 */
+				Oid			resultTypeId;
+				TupleDesc	tupdesc;
+
+				switch (get_call_result_type(fcinfo, &resultTypeId, &tupdesc))
+				{
+					case TYPEFUNC_COMPOSITE:
+						/* got the expected result rowtype, now coerce it */
+						coerce_function_result_tuple(&estate, tupdesc);
+						break;
+					case TYPEFUNC_COMPOSITE_DOMAIN:
+						/* got the expected result rowtype, now coerce it */
+						coerce_function_result_tuple(&estate, tupdesc);
+						/* and check domain constraints */
+						/* XXX allowing caching here would be good, too */
+						domain_check(estate.retval, false, resultTypeId,
+									 NULL, NULL);
+						break;
+					case TYPEFUNC_RECORD:
+
+						/*
+						 * Failed to determine actual type of RECORD.  We
+						 * could raise an error here, but what this means in
+						 * practice is that the caller is expecting any old
+						 * generic rowtype, so we don't really need to be
+						 * restrictive.  Pass back the generated result as-is.
+						 */
+						estate.retval = SPI_datumTransfer(estate.retval,
+														  false,
+														  -1);
+						break;
+					default:
+						/* shouldn't get here if retistuple is true ... */
+						elog(ERROR, "return type must be a row type");
+						break;
+				}
+			}
+		}
+		else
+		{
+			/* Scalar case: use exec_cast_value */
+			estate.retval = exec_cast_value(&estate,
+											estate.retval,
+											&fcinfo->isnull,
+											estate.rettype,
+											-1,
+											func->fn_rettype,
+											-1);
+
+			/*
+			 * If the function's return type isn't by value, copy the value
+			 * into upper executor memory context.  However, if we have a R/W
+			 * expanded datum, we can just transfer its ownership out to the
+			 * upper executor context.
+			 */
+			if (!fcinfo->isnull && !func->fn_retbyval)
+				estate.retval = SPI_datumTransfer(estate.retval,
+												  false,
+												  func->fn_rettyplen);
+		}
+	}
+	else
+	{
+		/*
+		 * We're returning a NULL, which normally requires no conversion work
+		 * regardless of datatypes.  But, if we are casting it to a domain
+		 * return type, we'd better check that the domain's constraints pass.
+		 */
+		if (func->fn_retisdomain)
+			estate.retval = exec_cast_value(&estate,
+											estate.retval,
+											&fcinfo->isnull,
+											estate.rettype,
+											-1,
+											func->fn_rettype,
+											-1);
+	}
+
+	estate.err_text = gettext_noop("during function exit");
+
+	/*
+	 * Let the instrumentation plugin peek at this function
+	 */
+	if (*plpgsql_plugin_ptr && (*plpgsql_plugin_ptr)->func_end)
+		((*plpgsql_plugin_ptr)->func_end) (&estate, func);
+
+	/* Clean up any leftover temporary memory */
+	plpgsql_destroy_econtext(&estate);
+	exec_eval_cleanup(&estate);
+	/* stmt_mcontext will be destroyed when function's main context is */
+
+	/*
+	 * Pop the error context stack
+	 */
+	error_context_stack = plerrcontext.previous;
+
+	/*
+	 * Return the function's result
+	 */
+	return estate.retval;
+}
+
 /*
  * error context callback to let us supply a call-stack traceback
  */
@@ -1349,6 +1672,14 @@ plpgsql_fulfill_promise(PLpgSQL_execstate *estate,
 
 	switch (var->promise)
 	{
+		//SPECHT
+		case PLPGSQL_PROMISE_WO:
+			if (estate->winobj == NULL)
+				elog(ERROR, "window promise is not in a window function");
+			//elog(WARNING, "Do promise ukládám estate->winobj");
+			assign_simple_var(estate, var, PointerGetDatum(estate->winobj), false, false);
+			break;
+
 		case PLPGSQL_PROMISE_TG_NAME:
 			if (estate->trigdata == NULL)
 				elog(ERROR, "trigger promise is not in a trigger function");
@@ -3982,6 +4313,10 @@ plpgsql_estate_setup(PLpgSQL_execstate *estate,
 	estate->err_text = NULL;
 
 	estate->plugin_info = NULL;
+
+	//SPECHT
+	estate->winobj = NULL;
+	estate->winobj_set = false;
 
 	/*
 	 * Create an EState and ExprContext for evaluation of simple expressions.

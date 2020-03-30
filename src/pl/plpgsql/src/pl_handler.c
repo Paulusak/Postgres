@@ -252,7 +252,12 @@ plpgsql_call_handler(PG_FUNCTION_ARGS)
 		 * Determine if called as function or trigger and call appropriate
 		 * subhandler
 		 */
-		if (CALLED_AS_TRIGGER(fcinfo))
+		//SPECHT
+		if(CALLED_AS_WINDOW_OBJECT(fcinfo))
+		{
+			retval = plpgsql_exec_window_object(func, (WindowObject) fcinfo->context, fcinfo, NULL, !nonatomic);
+		}
+		else if (CALLED_AS_TRIGGER(fcinfo))
 			retval = PointerGetDatum(plpgsql_exec_trigger(func,
 														  (TriggerData *) fcinfo->context));
 		else if (CALLED_AS_EVENT_TRIGGER(fcinfo))
