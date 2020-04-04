@@ -1215,7 +1215,7 @@ plpgsql_exec_event_trigger(PLpgSQL_function *func, EventTriggerData *trigdata)
 }
 
 //SPECHT
-Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, FunctionCallInfo fcinfo, EState *simple_eval_estate, bool atomic)
+Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, FunctionCallInfo fcinfo, EState *simple_eval_estate, ResourceOwner simple_eval_resowner, bool atomic)
 {
 	PLpgSQL_execstate estate;
 	ErrorContextCallback plerrcontext;
@@ -1225,8 +1225,7 @@ Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, Fu
 	/*
 	 * Setup the execution state
 	 */
-	plpgsql_estate_setup(&estate, func, (ReturnSetInfo *) fcinfo->resultinfo,
-						 simple_eval_estate);
+	plpgsql_estate_setup(&estate, func, (ReturnSetInfo *) fcinfo->resultinfo, simple_eval_estate, simple_eval_resowner);
 	estate.atomic = atomic;
 
 	//elog(WARNING, "Exec window object");

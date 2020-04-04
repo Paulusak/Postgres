@@ -255,7 +255,7 @@ plpgsql_call_handler(PG_FUNCTION_ARGS)
 		//SPECHT
 		if(CALLED_AS_WINDOW_OBJECT(fcinfo))
 		{
-			retval = plpgsql_exec_window_object(func, (WindowObject) fcinfo->context, fcinfo, NULL, !nonatomic);
+			retval = plpgsql_exec_window_object(func, (WindowObject) fcinfo->context, fcinfo, NULL, NULL, !nonatomic);
 		}
 		else if (CALLED_AS_TRIGGER(fcinfo))
 			retval = PointerGetDatum(plpgsql_exec_trigger(func,

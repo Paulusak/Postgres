@@ -1294,7 +1294,7 @@ extern void plpgsql_exec_event_trigger(PLpgSQL_function *func,
 									   EventTriggerData *trigdata);
 
 //SPECHT
-extern Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, FunctionCallInfo fcinfo, EState *simple_eval_estate, bool atomic);
+extern Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, FunctionCallInfo fcinfo, EState *simple_eval_estate, ResourceOwner simple_eval_resowner, bool atomic);
 
 extern void plpgsql_xact_cb(XactEvent event, void *arg);
 extern void plpgsql_subxact_cb(SubXactEvent event, SubTransactionId mySubid,

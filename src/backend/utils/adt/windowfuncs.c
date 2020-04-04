@@ -88,42 +88,6 @@ window_row_number(PG_FUNCTION_ARGS)
 	PG_RETURN_INT64(curpos + 1);
 }
 
-//SPECHT
-Datum my_window_row_number(PG_FUNCTION_ARGS)
-{
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	if(winobj == NULL)
-		PG_RETURN_INT64(-1);
-	else
-	{
-		int64 curpos = WinGetCurrentPosition(winobj);
-		WinSetMarkPosition(winobj, curpos);
-		PG_RETURN_INT64(curpos + 1);
-	}
-}
-    
-Datum
-my_window_rank(PG_FUNCTION_ARGS)
-{
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	rank_context *context;
-	bool		up;
-
-	if(winobj == NULL)
-		PG_RETURN_INT64(-1);
-	else
-	{
-		up = rank_up(winobj);
-		context = (rank_context *)
-			WinGetPartitionLocalMemory(winobj, sizeof(rank_context));
-		if (up)
-			context->rank = WinGetCurrentPosition(winobj) + 1;
-
-		PG_RETURN_INT64(context->rank);
-	}
-}
-
-
 /*
  * rank
  * Rank changes when key columns change.
@@ -506,4 +470,202 @@ window_nth_value(PG_FUNCTION_ARGS)
 		PG_RETURN_NULL();
 
 	PG_RETURN_DATUM(result);
+}
+
+//SPECHT
+
+Datum my_window_row_number(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	if(winobj == NULL)
+		PG_RETURN_INT64(-1);
+	else
+	{
+		int64 curpos = WinGetCurrentPosition(winobj);
+		WinSetMarkPosition(winobj, curpos);
+		PG_RETURN_INT64(curpos + 1);
+	}
+}
+
+Datum window_object_in(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_NULL();
+}
+
+Datum window_object_out(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_CSTRING("TEST");
+}
+    
+Datum
+my_window_rank(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	rank_context *context;
+	bool		up;
+
+	if(winobj == NULL)
+		PG_RETURN_INT64(-1);
+	else
+	{
+		up = rank_up(winobj);
+		context = (rank_context *)
+			WinGetPartitionLocalMemory(winobj, sizeof(rank_context));
+		if (up)
+			context->rank = WinGetCurrentPosition(winobj) + 1;
+
+		PG_RETURN_INT64(context->rank);
+	}
+}
+
+typedef struct window_memory_context
+{
+	float8		calculated_sum;
+} window_memory_context;
+
+Datum win_is_context_in_local_memory(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	if(WindowObjectIsValid(winobj))
+	{
+		window_memory_context * context;
+		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));
+		if(context->calculated_sum == 0)
+			PG_RETURN_BOOL(false);
+		PG_RETURN_BOOL(true);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+	
+}
+
+
+Datum win_get_partition_local_memory(PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	if(WindowObjectIsValid(winobj)){
+		window_memory_context * context;
+		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));
+		PG_RETURN_FLOAT8(context->calculated_sum);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_set_partition_local_memory(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	float8 res = PG_GETARG_FLOAT8(1);
+	if(WindowObjectIsValid(winobj)){
+		window_memory_context * context;
+		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));
+		context->calculated_sum = res;
+		PG_RETURN_NULL();
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_get_current_position(PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	if(WindowObjectIsValid(winobj)){
+		int64 curpos = WinGetCurrentPosition(winobj);
+		PG_RETURN_INT64(curpos);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_get_partition_row_count(PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	if(WindowObjectIsValid(winobj)){
+		int64 curpos = WinGetPartitionRowCount(winobj);
+		PG_RETURN_INT64(curpos);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_set_mark_position(PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	if(WindowObjectIsValid(winobj)){
+		int64 markpos = PG_GETARG_INT64(1);
+		WinSetMarkPosition(winobj, markpos);
+		PG_RETURN_NULL();
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_rows_are_peers(PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	int64 pos1 = PG_GETARG_INT64(1);
+	int64 pos2 = PG_GETARG_INT64(2);
+	if(WindowObjectIsValid(winobj)){
+		bool ret = WinRowsArePeers(winobj, pos1, pos2);
+		PG_RETURN_BOOL(ret);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_get_func_arg_in_partition (PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	int argno = PG_GETARG_INT32(1); 
+	int relpos = PG_GETARG_INT32(2);
+	int seektype = PG_GETARG_INT32(3);
+	bool set_mark = PG_GETARG_BOOL(4);
+	bool isnull;
+	bool isout;
+	if(WindowObjectIsValid(winobj)){
+		Datum ret = WinGetFuncArgInPartition(winobj, argno, relpos, seektype, set_mark, &isnull, &isout);
+		if(isout)
+			elog(WARNING, "Row out of the partition");
+		if (isnull)
+			PG_RETURN_NULL();
+		PG_RETURN_DATUM(ret);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_get_func_arg_in_frame (PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	int argno = PG_GETARG_INT32(1);
+	int relpos = PG_GETARG_INT32(2);
+	int seektype = PG_GETARG_INT32(3);
+	bool set_mark = PG_GETARG_BOOL(4);
+	bool isnull;
+	bool isout;
+	if(WindowObjectIsValid(winobj)){
+		Datum ret = WinGetFuncArgInFrame(winobj, argno, relpos, seektype, set_mark, &isnull, &isout);
+		if(isout)
+			elog(WARNING, "Row out of the frame");
+		if (isnull)
+			PG_RETURN_NULL();
+		PG_RETURN_DATUM(ret);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+}
+
+Datum win_get_func_arg_current (PG_FUNCTION_ARGS) //done
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	int argno = PG_GETARG_INT32(1);
+	bool isnull;
+	if(WindowObjectIsValid(winobj)){	
+		Datum ret = WinGetFuncArgCurrent(winobj, argno, &isnull);
+		if (isnull)
+			PG_RETURN_NULL();
+		PG_RETURN_DATUM(ret);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
 }
