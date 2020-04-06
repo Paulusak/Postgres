@@ -621,8 +621,11 @@
   typoutput => 'anycompatiblerange_out', typreceive => '-', typsend => '-',
   typalign => 'd', typstorage => 'x' },
 
+
+  # SPECHT - Vlastni datovy typ window_object slouzici pro praci s window funkcemi
+
   { oid => '270', oid_symbol => 'WINDOWOBJECTOID',
-  descr => 'not pseudo-type for the result of an window object function',
+  descr => 'Datovy typ slouzici pro praci s WindowObject',
   typname => 'window_object', typlen => 'SIZEOF_POINTER', typbyval => 't',
   typcategory => 'P', typinput => 'window_object_in',
   typoutput => 'window_object_out', typreceive => '-', typsend => '-',

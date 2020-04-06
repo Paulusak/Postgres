@@ -86,7 +86,10 @@ typedef enum PLpgSQL_promise_type
 	PLPGSQL_PROMISE_TG_ARGV,
 	PLPGSQL_PROMISE_TG_EVENT,
 	PLPGSQL_PROMISE_TG_TAG,
-	//SPECHT
+	/* 
+	 * SPECHT
+	 * Vlastni druh promise pro window_object
+	 */ 
 	PLPGSQL_PROMISE_WO
 } PLpgSQL_promise_type;
 
@@ -1117,10 +1120,14 @@ typedef struct PLpgSQL_execstate
 
 	void	   *plugin_info;	/* reserved for use by optional plugin */
 
-	//SPECHT
+	/* 
+	 * SPECHT
+	 * Na toto misto se ulozi WindowObject, aby byl pri promise 
+	 * v pl_exec.c dostupny. Struktura PLpgSQL_execstate je dostupna z kazde funkce v pl_exec.
+	 */
 	WindowObject winobj;
-	bool winobj_set;
-
+	bool winobj_set; /* Signalizuje, zda je winobj nastaven ci nikoliv */
+	/* SPECHT */
 } PLpgSQL_execstate;
 
 /*
@@ -1293,9 +1300,9 @@ extern HeapTuple plpgsql_exec_trigger(PLpgSQL_function *func,
 extern void plpgsql_exec_event_trigger(PLpgSQL_function *func,
 									   EventTriggerData *trigdata);
 
-//SPECHT
+/* SPECHT - deklarace funkce, ktera zpracovava window funkci */
 extern Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, FunctionCallInfo fcinfo, EState *simple_eval_estate, ResourceOwner simple_eval_resowner, bool atomic);
-
+/* SPECHT */
 extern void plpgsql_xact_cb(XactEvent event, void *arg);
 extern void plpgsql_subxact_cb(SubXactEvent event, SubTransactionId mySubid,
 							   SubTransactionId parentSubid, void *arg);

@@ -777,11 +777,15 @@ do_compile(FunctionCallInfo fcinfo,
 								 true);
 	function->found_varno = var->dno;
 
-	//SPECHT
-	var = plpgsql_build_variable("winobj", 1, plpgsql_build_datatype(WINDOWOBJECTOID,-1,InvalidOid,NULL),true);
+	/* SPECHT 
+	 * Vytvoreni automaticke promenne winobj - lze ji pote volat z vlastni extenze ve funkcich v jazyce PL/pgSQL
+	 * Promenna je vlastni datoveho typu WINDOWOBJECTOID - definovan v catalog/pg_type.dat
+	 * Po vzoru triggeru se vytvoril vlastni typ promise - hodnota se muze dosadit v prubehu asynchronne
+	 */
+	var = plpgsql_build_variable("winobj", 1, plpgsql_build_datatype(WINDOWOBJECTOID,-1,InvalidOid,NULL),true); 
 	var->dtype = PLPGSQL_DTYPE_PROMISE;
 	((PLpgSQL_var *) var)->promise = PLPGSQL_PROMISE_WO;
-	//elog(WARNING, "Vytvarim global promennou winobj");
+	/* SPECHT */
 
 	/*
 	 * Now parse the function's text

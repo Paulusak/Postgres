@@ -1692,13 +1692,16 @@ plpgsql_fulfill_promise(PLpgSQL_execstate *estate,
 
 	switch (var->promise)
 	{
-		//SPECHT
+		/*
+		 * SPECHT
+		 * Po vzoru triggeru se do window_object promise nastavuje hodnota z prechodneho uloziste v PLpgSQL_execstate
+		 */
 		case PLPGSQL_PROMISE_WO:
-			if (estate->winobj == NULL)
+			if (estate->winobj == NULL) /* Promenna ma typ promise pro window objekt, ale v prechodnem ulozisti neni zadna hodnota - nejspise spatne nastaveny typ*/
 				elog(ERROR, "window promise is not in a window function");
-			//elog(WARNING, "Do promise ukládám estate->winobj");
-			assign_simple_var(estate, var, PointerGetDatum(estate->winobj), false, false);
+			assign_simple_var(estate, var, PointerGetDatum(estate->winobj), false, false); /* Dosazeni do promenne z prechodneho uloziste */
 			break;
+		/* SPECHT */
 
 		case PLPGSQL_PROMISE_TG_NAME:
 			if (estate->trigdata == NULL)
@@ -4341,9 +4344,12 @@ plpgsql_estate_setup(PLpgSQL_execstate *estate,
 
 	estate->plugin_info = NULL;
 
-	//SPECHT
+	/*
+	 * SPECHT - pri inicializaci PLpgSQL_execstate se prechodneho uloziste nastavi na vychozi hodnotu
+	 */
 	estate->winobj = NULL;
 	estate->winobj_set = false;
+	/* SPECHT */
 
 	/*
 	 * Create an EState and ExprContext for evaluation of simple expressions.

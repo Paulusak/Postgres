@@ -10824,74 +10824,64 @@
   proname => 'pg_partition_root', prorettype => 'regclass',
   proargtypes => 'regclass', prosrc => 'pg_partition_root' },
 
-{ oid => '271', descr => 'I/O',
+# SPECHT - registrace funkci - aby je bylo mozne pouzit v PL/pgSQL
+
+{ oid => '271', descr => 'I/O pro window_object',
   proname => 'window_object_in', proisstrict => 'f',
   prorettype => 'window_object', proargtypes => 'cstring',
   prosrc => 'window_object_in' },
 
-{ oid => '272', descr => 'I/O',
+{ oid => '272', descr => 'I/O pro window_object',
   proname => 'window_object_out', prorettype => 'cstring',
   proargtypes => 'window_object', prosrc => 'window_object_out' },  
 
-{ oid => '273', descr => 'my row number within partition',
-  proname => 'my_window_row_number', proisstrict => 'f',
-  prorettype => 'int8', proargtypes => 'window_object', prosrc =>
-'my_window_row_number' },
-
-
-{ oid => '8191', descr => 'my rank within partition',
-  proname => 'my_window_rank', proisstrict => 'f',
-  prorettype => 'int8', proargtypes => 'window_object', prosrc =>
-'my_window_rank' },
-
-
-{ oid => '8192', descr => 'WinGetCurrentPosition upraveno',
+{ oid => '8191', descr => 'Obalkova funkce pro WinGetCurrentPosition',
   proname => 'win_get_current_position', proisstrict => 'f',
   prorettype => 'int8', proargtypes => 'window_object', prosrc =>
 'win_get_current_position' },
 
-{ oid => '8193', descr => 'WinSetMarkPosition upraveno',
+{ oid => '8192', descr => 'Obalkova funkce pro WinSetMarkPosition',
   proname => 'win_set_mark_position', proisstrict => 'f',
   prorettype => 'void', proargtypes => 'window_object int8', prosrc =>
 'win_set_mark_position' },
 
-{ oid => '8194', descr => 'WinGetPartitionLocalMemory upraveno',
+{ oid => '8193', descr => 'Obalkova funkce pro WinGetPartitionLocalMemory',
   proname => 'win_get_partition_local_memory', proisstrict => 'f',
   prorettype => 'float8', proargtypes => 'window_object', prosrc =>
 'win_get_partition_local_memory' },
 
-{ oid => '8195', descr => 'WinGetPartitionRowCount upraveno',
-  proname => 'win_get_partition_row_count', proisstrict => 'f',
-  prorettype => 'int8', proargtypes => 'window_object', prosrc =>
-'win_get_partition_row_count' },
-
-{ oid => '8196', descr => 'WinRowsArePeers upraveno',
-  proname => 'win_rows_are_peers', proisstrict => 'f',
-  prorettype => 'bool', proargtypes => 'window_object int8 int8', prosrc =>
-'win_rows_are_peers' },
-
-{ oid => '8197', descr => 'WinGetFuncArgInPartition upraveno',
-  proname => 'win_get_func_arg_in_partition', proisstrict => 'f',
-  prorettype => 'int8', proargtypes => 'window_object int4 int4 int4 bool', prosrc =>
-'win_get_func_arg_in_partition' },
-
-{ oid => '8198', descr => 'WinGetFuncArgInFrame upraveno',
-  proname => 'win_get_func_arg_in_frame', proisstrict => 'f',
-  prorettype => 'int8', proargtypes => 'window_object int4 int4 int4 bool', prosrc =>
-'win_get_func_arg_in_frame' },
-
-{ oid => '8199', descr => 'WinGetFuncArgCurrent upraveno',
-  proname => 'win_get_func_arg_current', proisstrict => 'f',
-  prorettype => 'int8', proargtypes => 'window_object int4', prosrc =>
-'win_get_func_arg_current' },
-
-{ oid => '8200', descr => 'win_set_partition_local_memory',
+{ oid => '8194', descr => 'Pomocna funkce k WinGetPartitionLocalMemory - nastavuje hodnotu v pameti',
   proname => 'win_set_partition_local_memory', proisstrict => 'f',
   prorettype => 'void', proargtypes => 'window_object float8', prosrc =>
 'win_set_partition_local_memory' },
 
-{ oid => '8201', descr => 'win_is_context_in_local_memory',
+{ oid => '8195', descr => 'Pomocna funkce k WinGetPartitionLocalMemory - je hodnota v pameti',
   proname => 'win_is_context_in_local_memory', proisstrict => 'f',
   prorettype => 'bool', proargtypes => 'window_object', prosrc =>
 'win_is_context_in_local_memory' },
+
+{ oid => '8196', descr => 'Obalkova funkce pro  WinGetPartitionRowCount',
+  proname => 'win_get_partition_row_count', proisstrict => 'f',
+  prorettype => 'int8', proargtypes => 'window_object', prosrc =>
+'win_get_partition_row_count' },
+
+{ oid => '8197', descr => 'Obalkova funkce pro WinRowsArePeers',
+  proname => 'win_rows_are_peers', proisstrict => 'f',
+  prorettype => 'bool', proargtypes => 'window_object int8 int8', prosrc =>
+'win_rows_are_peers' },
+
+{ oid => '8198', descr => 'Obalkova funkce pro WinGetFuncArgInPartition',
+  proname => 'win_get_func_arg_in_partition', proisstrict => 'f',
+  prorettype => 'int8', proargtypes => 'window_object int4 int4 int4 bool', prosrc =>
+'win_get_func_arg_in_partition' },
+
+{ oid => '8199', descr => 'Obalkova funkce pro WinGetFuncArgInFrame',
+  proname => 'win_get_func_arg_in_frame', proisstrict => 'f',
+  prorettype => 'int8', proargtypes => 'window_object int4 int4 int4 bool', prosrc =>
+'win_get_func_arg_in_frame' },
+
+{ oid => '8200', descr => 'Obalkova funkce pro WinGetFuncArgCurrent',
+  proname => 'win_get_func_arg_current', proisstrict => 'f',
+  prorettype => 'int8', proargtypes => 'window_object int4', prosrc =>
+'win_get_func_arg_current' },
 ]

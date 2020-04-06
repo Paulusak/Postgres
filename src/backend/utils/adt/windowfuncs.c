@@ -472,200 +472,215 @@ window_nth_value(PG_FUNCTION_ARGS)
 	PG_RETURN_DATUM(result);
 }
 
-//SPECHT
+/* SPECHT */
 
-Datum my_window_row_number(PG_FUNCTION_ARGS)
-{
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	if(winobj == NULL)
-		PG_RETURN_INT64(-1);
-	else
-	{
-		int64 curpos = WinGetCurrentPosition(winobj);
-		WinSetMarkPosition(winobj, curpos);
-		PG_RETURN_INT64(curpos + 1);
-	}
-}
-
-Datum window_object_in(PG_FUNCTION_ARGS)
-{
-	PG_RETURN_NULL();
-}
-
-Datum window_object_out(PG_FUNCTION_ARGS)
-{
-	PG_RETURN_CSTRING("TEST");
-}
-    
-Datum
-my_window_rank(PG_FUNCTION_ARGS)
-{
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	rank_context *context;
-	bool		up;
-
-	if(winobj == NULL)
-		PG_RETURN_INT64(-1);
-	else
-	{
-		up = rank_up(winobj);
-		context = (rank_context *)
-			WinGetPartitionLocalMemory(winobj, sizeof(rank_context));
-		if (up)
-			context->rank = WinGetCurrentPosition(winobj) + 1;
-
-		PG_RETURN_INT64(context->rank);
-	}
-}
-
+/*
+ * Struktura slouzici k uchovani informace v win_get_partition_local_memory a pomocnych funkcich
+ */
 typedef struct window_memory_context
 {
-	float8		calculated_sum;
+	float8	calculated_value;
 } window_memory_context;
 
+/*
+ * Obalkova funkce pro WinGetPartitionLocalMemory, aby mohla byt pouzita z PL/pgSQL
+ */
+Datum win_get_partition_local_memory(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu*/
+		window_memory_context	*context;	/* Ukazatel na strukturu uchovavajici hodnotu ulozenou pri predchozi iteraci v soucasne partition */
+		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context)); /* Z pameti se vrati ukazatel na strukturu */
+		PG_RETURN_FLOAT8(context->calculated_value);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
+}
+
+/*
+ * Pomocna funkce pro win_get_partition_local_memory - zkouma, zda je ve strukture z partition pameti ulozena informace. Vraci true/false.
+ */
 Datum win_is_context_in_local_memory(PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	if(WindowObjectIsValid(winobj))
-	{
-		window_memory_context * context;
-		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));
-		if(context->calculated_sum == 0)
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu*/
+		window_memory_context	*context;	/* Ukazatel na strukturu uchovavajici hodnotu ulozenou pri predchozi iteraci v soucasne partition */
+		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));	/* Z pameti se vrati ukazatel na strukturu */
+		if(context->calculated_value == 0)
 			PG_RETURN_BOOL(false);
 		PG_RETURN_BOOL(true);
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 	
 }
 
-
-Datum win_get_partition_local_memory(PG_FUNCTION_ARGS) //done
-{
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	if(WindowObjectIsValid(winobj)){
-		window_memory_context * context;
-		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));
-		PG_RETURN_FLOAT8(context->calculated_sum);
-	}
-	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
-}
-
+/*
+ * Pomocna funkce pro win_get_partition_local_memory - ulozi do struktury vypocitanou hodnotu pro pozdejsi pouziti.
+ */
 Datum win_set_partition_local_memory(PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	float8 res = PG_GETARG_FLOAT8(1);
-	if(WindowObjectIsValid(winobj)){
-		window_memory_context * context;
-		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));
-		context->calculated_sum = res;
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
+	float8 res = PG_GETARG_FLOAT8(1);	/* 
+										 * Struktura, ktera drzi hodnotu v pameti, obsahuje float8. Pro obecne pouziti by bylo 
+										 * potreba vytvorit v kazde funkci rozcestnik podle datoveho typu na vstupu. Pro demonstraci
+										 * funkcnosti v ramci prace je staticky pouzit datovy typ float8.
+										 */
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
+		window_memory_context	*context;	/* Ukazatel na strukturu uchovavajici hodnotu ulozenou pri predchozi iteraci v soucasne partition */
+		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));	/* Z pameti se vrati ukazatel na strukturu */
+		context->calculated_value = res;	
 		PG_RETURN_NULL();
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 }
 
-Datum win_get_current_position(PG_FUNCTION_ARGS) //done
+/*
+ * Obalkova funkce pro WinGetCurrentPosition - vraci aktualni pozici v ramci partition
+ */
+Datum win_get_current_position(PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	if(WindowObjectIsValid(winobj)){
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
 		int64 curpos = WinGetCurrentPosition(winobj);
 		PG_RETURN_INT64(curpos);
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 }
 
-Datum win_get_partition_row_count(PG_FUNCTION_ARGS) //done
+/*
+ * Obalkova funkce pro WinSetMarkPosition - nastavuje novou pozici v ramci partition 
+ */
+Datum win_set_mark_position(PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	if(WindowObjectIsValid(winobj)){
-		int64 curpos = WinGetPartitionRowCount(winobj);
-		PG_RETURN_INT64(curpos);
-	}
-	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
-}
-
-Datum win_set_mark_position(PG_FUNCTION_ARGS) //done
-{
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	if(WindowObjectIsValid(winobj)){
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
 		int64 markpos = PG_GETARG_INT64(1);
 		WinSetMarkPosition(winobj, markpos);
 		PG_RETURN_NULL();
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 }
 
-Datum win_rows_are_peers(PG_FUNCTION_ARGS) //done
+/*
+ * Obalkova funkce pro WinGetPartitionRowCount - vraci pocet radku v ramci soucasne partition
+ */
+Datum win_get_partition_row_count(PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
-	int64 pos1 = PG_GETARG_INT64(1);
-	int64 pos2 = PG_GETARG_INT64(2);
-	if(WindowObjectIsValid(winobj)){
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
+		int64 curpos = WinGetPartitionRowCount(winobj);
+		PG_RETURN_INT64(curpos);
+	}
+	else
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
+}
+
+/*
+ * Obalkova funkce pro WinRowsArePeers - porovnava radky podle absolutni pozice v partition, zda jsou si rovne podle ORDER BY klauzule
+ */
+Datum win_rows_are_peers(PG_FUNCTION_ARGS)
+{
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
+	int64 pos1 = PG_GETARG_INT64(1);	/* Pozice prvniho radku */
+	int64 pos2 = PG_GETARG_INT64(2);	/* Pozice druheho radku */
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
 		bool ret = WinRowsArePeers(winobj, pos1, pos2);
 		PG_RETURN_BOOL(ret);
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 }
 
-Datum win_get_func_arg_in_partition (PG_FUNCTION_ARGS) //done
+/*
+ * Obalkova funkce pro WinGetFuncArgInPartition - vraci x-ty funkcni argument (argno) v soucasne partition, 
+ * specifikovano podle pozice (relpos) a podle ceho se pozice pocita (seektype - viz windowapi.h)
+ */
+Datum win_get_func_arg_in_partition (PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
 	int argno = PG_GETARG_INT32(1); 
 	int relpos = PG_GETARG_INT32(2);
 	int seektype = PG_GETARG_INT32(3);
 	bool set_mark = PG_GETARG_BOOL(4);
 	bool isnull;
 	bool isout;
-	if(WindowObjectIsValid(winobj)){
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
 		Datum ret = WinGetFuncArgInPartition(winobj, argno, relpos, seektype, set_mark, &isnull, &isout);
-		if(isout)
+		if(isout) /* Hledani se dostalo mimo soucasnou partition */
 			elog(WARNING, "Row out of the partition");
-		if (isnull)
+		if (isnull)	/* Hodnota argumentu je NULL */
 			PG_RETURN_NULL();
 		PG_RETURN_DATUM(ret);
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 }
 
-Datum win_get_func_arg_in_frame (PG_FUNCTION_ARGS) //done
+/*
+ * Obalkova funkce pro WinGetFuncArgInFrame - vraci x-ty funkcni argument (argno) v celem frame, 
+ * specifikovano podle pozice (relpos) a podle ceho se pozice pocita (seektype - viz windowapi.h - nemelo by byt WINDOW_SEEK_CURRENT)
+ */
+Datum win_get_func_arg_in_frame (PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
 	int argno = PG_GETARG_INT32(1);
 	int relpos = PG_GETARG_INT32(2);
 	int seektype = PG_GETARG_INT32(3);
 	bool set_mark = PG_GETARG_BOOL(4);
 	bool isnull;
 	bool isout;
-	if(WindowObjectIsValid(winobj)){
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
 		Datum ret = WinGetFuncArgInFrame(winobj, argno, relpos, seektype, set_mark, &isnull, &isout);
-		if(isout)
+		if(isout)	/* Hledani se dostalo mimo frame */
 			elog(WARNING, "Row out of the frame");
-		if (isnull)
+		if (isnull)	/* Hodnota argumentu je NULL */
 			PG_RETURN_NULL();
 		PG_RETURN_DATUM(ret);
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 }
 
-Datum win_get_func_arg_current (PG_FUNCTION_ARGS) //done
+/*
+ * Obalkova funkce pro WinGetFuncArgCurrent - vraci x-ty funkcni argument (argno) na aktualni pozici
+ */
+Datum win_get_func_arg_current (PG_FUNCTION_ARGS)
 {
-	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);
+	WindowObject winobj = (WindowObject) PG_GETARG_POINTER(0);	/* Struktura uchovavajici dulezite informace k window funkci */
 	int argno = PG_GETARG_INT32(1);
 	bool isnull;
-	if(WindowObjectIsValid(winobj)){	
+	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu */
 		Datum ret = WinGetFuncArgCurrent(winobj, argno, &isnull);
-		if (isnull)
-			PG_RETURN_NULL();
+		if (isnull)	/* Hodnota argumentu je NULL */
+			PG_RETURN_NULL();	
 		PG_RETURN_DATUM(ret);
 	}
 	else
-		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));
+		ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("WindowObject function argument empty or corrupted")));	/* WindowObject obsahoval nevalidni hodnotu */
 }
+
+/*
+ * Funkce slouzici pro vytvoreni vlastniho datoveho typu window_object
+ * Je nutne specifikovat dve funkce - 1) in (na vstupu dostane cstring retezec a vrati objekt)
+ * Pro ucely prace je funkce prazdna a vrati staticky stejne hodnoty, protoze se nevyuzije jeji ucel
+ */
+Datum window_object_in(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_NULL();
+}
+
+/*
+ * Funkce slouzici pro vytvoreni vlastniho datoveho typu window_object
+ * Je nutne specifikovat dve funkce - 2) out (na vstupu dostane objekt a vrati cstring retezec)
+ * Pro ucely prace je funkce prazdna a vrati staticky stejne hodnoty, protoze se nevyuzije jeji ucel
+ */
+Datum window_object_out(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_CSTRING("TEST");
+}
+
+/* SPECHT */

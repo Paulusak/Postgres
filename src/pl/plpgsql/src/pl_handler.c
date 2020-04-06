@@ -252,11 +252,14 @@ plpgsql_call_handler(PG_FUNCTION_ARGS)
 		 * Determine if called as function or trigger and call appropriate
 		 * subhandler
 		 */
-		//SPECHT
-		if(CALLED_AS_WINDOW_OBJECT(fcinfo))
-		{
+
+		/* SPECHT
+		 * Odchyceni window funkce - zavola se v pl_exec.c vlastni verze vyhodnoceni funkce
+		 */
+		if(CALLED_AS_WINDOW_OBJECT(fcinfo)){
 			retval = plpgsql_exec_window_object(func, (WindowObject) fcinfo->context, fcinfo, NULL, NULL, !nonatomic);
 		}
+		/* SPECHT */
 		else if (CALLED_AS_TRIGGER(fcinfo))
 			retval = PointerGetDatum(plpgsql_exec_trigger(func,
 														  (TriggerData *) fcinfo->context));
