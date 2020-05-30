@@ -8,6 +8,7 @@
 #include <float.h>
 #include <math.h>
 #include <limits.h>
+#include "windowapi.h"
 
 #include "catalog/pg_type.h"
 #include "common/int.h"
@@ -23,6 +24,42 @@
 PG_MODULE_MAGIC;
 
 PG_FUNCTION_INFO_V1(test);
+PG_FUNCTION_INFO_V1(custom_rownum);
+PG_FUNCTION_INFO_V1(custom_window_max);
+
+typedef struct window_memory_context
+{
+	int	calculated_value;
+} window_memory_context;
+
+Datum custom_window_max(PG_FUNCTION_ARGS)
+{
+	WindowObject win_obj = PG_WINDOW_OBJECT();
+	int		partition_count = WinGetPartitionRowCount(win_obj);
+	window_memory_context * saved = (window_memory_context * ) WinGetPartitionLocalMemory(win_obj, sizeof(window_memory_context));
+	if(saved->calculated_value == 0){
+		int max_value = 0;
+		bool is_set = false;
+		for (int i = 0; i < partition_count; i++)
+		{
+			bool isnull;
+			bool isout;
+			int tmp_value = DatumGetInt32(WinGetFuncArgInPartition(win_obj, 0, i, 1, false, &isnull, &isout));
+			if(isout)
+				elog(WARNING, "Row out of the frame");
+			else if(!isnull){
+				if(!is_set){
+						max_value = tmp_value;
+						is_set = true;
+					}
+					else if(tmp_value > max_value)
+						max_value = tmp_value;	
+				}
+		}
+		saved->calculated_value = max_value;
+	}
+		return saved->calculated_value;	
+}
 
 //vase ukazka z kavarny
 Datum test(PG_FUNCTION_ARGS)

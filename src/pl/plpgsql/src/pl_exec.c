@@ -1228,6 +1228,10 @@ Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, Fu
 	plpgsql_estate_setup(&estate, func, (ReturnSetInfo *) fcinfo->resultinfo, simple_eval_estate, simple_eval_resowner);
 	estate.atomic = atomic;
 
+	/*
+	 * Nastaveni docasneho objektu a indikatoru	
+	 */
+	
 	//elog(WARNING, "Exec window object");
 	if(estate.winobj_set == false)
 	{
@@ -1535,6 +1539,8 @@ Datum plpgsql_exec_window_object(PLpgSQL_function *func, WindowObject winobj, Fu
 	 */
 	return estate.retval;
 }
+//SPECHT
+
 
 /*
  * error context callback to let us supply a call-stack traceback

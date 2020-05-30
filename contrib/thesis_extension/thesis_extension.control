@@ -1,0 +1,5 @@
+comment = 'extenze obsahujici ukazky window funkci pomoci plgpsql'
+default_version = '1.0'
+module_pathname = '$libdir/thesis_extension'
+relocatable = true
+trusted = true

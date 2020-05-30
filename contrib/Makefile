@@ -49,7 +49,8 @@ SUBDIRS = \
 		tsm_system_time \
 		unaccent	\
 		vacuumlo	\
-		my_rownum
+		my_rownum	\
+		thesis_extension
 
 ifeq ($(with_openssl),yes)
 SUBDIRS += sslinfo

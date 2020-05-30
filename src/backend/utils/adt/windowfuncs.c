@@ -506,7 +506,7 @@ Datum win_is_context_in_local_memory(PG_FUNCTION_ARGS)
 	if(WindowObjectIsValid(winobj)){	/* Funkce z windowapi.h, ktera zkouma validitu WindowObject objektu*/
 		window_memory_context	*context;	/* Ukazatel na strukturu uchovavajici hodnotu ulozenou pri predchozi iteraci v soucasne partition */
 		context = (window_memory_context *) WinGetPartitionLocalMemory(winobj, sizeof(window_memory_context));	/* Z pameti se vrati ukazatel na strukturu */
-		if(context->calculated_value == 0)
+		if(!context->calculated_value)
 			PG_RETURN_BOOL(false);
 		PG_RETURN_BOOL(true);
 	}
